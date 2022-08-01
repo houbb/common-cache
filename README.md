@@ -25,8 +25,8 @@
 
 ```xml
 <dependency>
-    <group>com.github.houbb</group>
-    <artifact>common-cache-core</artifact>
+    <groupId>com.github.houbb</groupId>
+    <artifactId>common-cache-core</artifactId>
     <version>${最新版本}</version>
 </dependency>
 ```
