@@ -57,12 +57,12 @@ public class CommonCacheServiceMap implements ICommonCacheService {
     }
 
     @Override
-    public void set(String key, String value) {
+    public synchronized void set(String key, String value) {
         this.set(key, value, 0);
     }
 
     @Override
-    public void set(String key, String value, long expireMills) {
+    public synchronized void set(String key, String value, long expireMills) {
         long actualMills = 0;
         if(expireMills <= 0) {
             LOG.info("过期时间小于0，认为不过期");
@@ -95,7 +95,7 @@ public class CommonCacheServiceMap implements ICommonCacheService {
     }
 
     @Override
-    public void expire(String key, long expireTime, TimeUnit timeUnit) {
+    public synchronized void expire(String key, long expireTime, TimeUnit timeUnit) {
         //判断 key 是否存在
         if(contains(key)) {
             long currentMills = System.currentTimeMillis();
@@ -109,7 +109,7 @@ public class CommonCacheServiceMap implements ICommonCacheService {
     }
 
     @Override
-    public void remove(String key) {
+    public synchronized void remove(String key) {
         cacheMap.remove(key);
     }
 
@@ -120,6 +120,9 @@ public class CommonCacheServiceMap implements ICommonCacheService {
     private synchronized void checkExpireAndRemove(String key) {
         //1. 获取
         CommonCacheValueDto dto = cacheMap.get(key);
+        if(dto == null) {
+            return;
+        }
 
         Long expireTime = dto.getExpireTime();
         if(expireTime != null) {

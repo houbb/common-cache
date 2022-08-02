@@ -27,7 +27,7 @@
 <dependency>
     <groupId>com.github.houbb</groupId>
     <artifactId>common-cache-core</artifactId>
-    <version>${最新版本}</version>
+    <version>0.0.2</version>
 </dependency>
 ```
 
