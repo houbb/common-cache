@@ -41,8 +41,11 @@
 | set(String key, String value, long expireMills) | 设置对应的值，指定过期时间 | void |
 | get(String key) | 获取值 | String |
 | contains(String key) | 是否包含 | boolean |
-| expire(String key, long expireTime, TimeUnit timeUnit) | 指定过期信息 | void |
+| expire(String key, long expireTime, TimeUnit timeUnit) | 指定过期时间 | void |
+| expireAt(String key, long unixTime) | 指定 key 的过期时间 | void |
 | remove(String key) | 移除指定的 key | void |
+| ttl(String key) | 获取指定 key 的存活时间，不过期返回-1，不存在返回-2 | long |
+| expireAt(String key) | 获取 key 的过期时间，不过期返回-1，不存在返回-2 | long |
 
 ## 使用
 

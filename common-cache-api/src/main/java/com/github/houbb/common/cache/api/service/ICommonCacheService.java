@@ -57,4 +57,30 @@ public interface ICommonCacheService {
      */
     void remove(String key);
 
+    /**
+     * key 的存活时间
+     *
+     * In Redis 2.8 or newer, if the Key does not have an associated expire, -1 is returned or if the Key does not exists, -2 is returned.
+     * @param key 获取 key
+     * @return 结果
+     * @since 0.0.3
+     */
+    long ttl(String key);
+
+    /**
+     * 指定过期时间
+     * @param key 键
+     * @param unixTime 时间
+     * @since 0.0.3
+     */
+    void expireAt(String key, long unixTime);
+
+    /**
+     * 获取过期的 UNIX 时间，不存在时返回 null
+     * @param key 键
+     * @return 时间
+     * @since 0.0.3
+     */
+    long expireAt(String key);
+
 }

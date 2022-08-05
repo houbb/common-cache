@@ -114,6 +114,60 @@ public class CommonCacheServiceMap implements ICommonCacheService {
     }
 
     /**
+     *
+     * @param key 获取 key
+     * @return 结果
+     */
+    @Override
+    public long ttl(String key) {
+        checkExpireAndRemove(key);
+
+        CommonCacheValueDto dto = cacheMap.get(key);
+        // 信息不存在
+        if(dto == null) {
+            return -2L;
+        }
+        // 没有指定过期时间
+        Long expireTime = dto.getExpireTime();
+        if(expireTime == null) {
+            return -1L;
+        }
+
+        // 获取真实的过期时间
+        long currentTime = System.currentTimeMillis();
+        return expireTime - currentTime;
+    }
+
+    @Override
+    public void expireAt(String key, long unixTime) {
+        //判断 key 是否存在
+        if(contains(key)) {
+            CommonCacheValueDto dto = cacheMap.get(key);
+            dto.setExpireTime(unixTime);
+
+            cacheMap.put(key, dto);
+        }
+    }
+
+    @Override
+    public long expireAt(String key) {
+        checkExpireAndRemove(key);
+
+        CommonCacheValueDto dto = cacheMap.get(key);
+        // 信息不存在
+        if(dto == null) {
+            return -2;
+        }
+
+        Long expireTime = dto.getExpireTime();
+        if(expireTime == null) {
+            return -1;
+        }
+
+        return expireTime;
+    }
+
+    /**
      * 当一个信息过期的时候，将其清空。惰性淘汰
      * @param key 键
      */
