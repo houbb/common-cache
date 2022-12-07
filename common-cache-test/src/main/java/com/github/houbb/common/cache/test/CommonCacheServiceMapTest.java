@@ -7,7 +7,7 @@ import org.junit.Test;
 
 /**
  * @author binbin.hou
- * @since 1.0.0
+ * @since 0.0.1
  */
 public class CommonCacheServiceMapTest {
 

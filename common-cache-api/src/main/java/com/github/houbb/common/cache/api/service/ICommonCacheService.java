@@ -1,5 +1,6 @@
 package com.github.houbb.common.cache.api.service;
 
+import java.util.List;
 import java.util.concurrent.TimeUnit;
 
 /**
@@ -14,7 +15,7 @@ public interface ICommonCacheService {
      * 设置
      * @param key key
      * @param value 值
-     * @since 1.0.0
+     * @since 0.0.1
      */
     void set(String key, String value);
 
@@ -22,7 +23,7 @@ public interface ICommonCacheService {
      * 设置对应的值
      * @param key 健
      * @param value 值
-     * @param expireMills 过期的耗秒数
+     * @param expireMills 过期的耗秒数  过期时间小于等于0，认为不过期
      */
     void set(String key, String value, long expireMills);
 
@@ -35,25 +36,18 @@ public interface ICommonCacheService {
 
     /**
      * 是否包含指定的 key
+     * 同 exists
      * @param key 键
      * @return 结果
-     * @since 1.0.0
+     * @since 0.0.1
      */
     boolean contains(String key);
 
     /**
-     * 过期
-     * @param key key
-     * @param expireTime 过期时间
-     * @param timeUnit 时间单位
-     * @since 1.0.0
-     */
-    void expire(String key, long expireTime, TimeUnit timeUnit);
-
-    /**
      * 删除
+     * 同 del
      * @param key 键
-     * @since 1.0.0
+     * @since 0.0.1
      */
     void remove(String key);
 
@@ -66,6 +60,15 @@ public interface ICommonCacheService {
      * @since 0.0.3
      */
     long ttl(String key);
+
+    /**
+     * 过期
+     * @param key key
+     * @param expireTime 过期时间
+     * @param timeUnit 时间单位
+     * @since 0.0.1
+     */
+    void expire(String key, long expireTime, TimeUnit timeUnit);
 
     /**
      * 指定过期时间
@@ -82,5 +85,33 @@ public interface ICommonCacheService {
      * @since 0.0.3
      */
     long expireAt(String key);
+
+    /**
+     * EVAL 对应的值
+     * @param script 脚本
+     * @param keyCount key 总数
+     * @param params 值
+     * @return 结果
+     * @since 0.0.4
+     */
+    Object eval(String script, int keyCount, String... params);
+
+    /**
+     * 执行脚本
+     * @param script 脚本
+     * @param keys 键
+     * @param params 值
+     * @return 结果
+     * @since 0.0.4
+     */
+    Object eval(String script, List<String> keys, List<String> params);
+
+    /**
+     * EVAL 脚本
+     * @param script 脚本
+     * @return 结果
+     * @since 0.0.4
+     */
+    Object eval(String script);
 
 }

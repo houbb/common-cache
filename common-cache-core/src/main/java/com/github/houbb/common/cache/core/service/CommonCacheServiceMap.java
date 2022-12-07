@@ -1,6 +1,6 @@
 package com.github.houbb.common.cache.core.service;
 
-import com.github.houbb.common.cache.api.service.ICommonCacheService;
+import com.github.houbb.common.cache.api.service.AbstractCommonCacheService;
 import com.github.houbb.common.cache.core.dto.CommonCacheValueDto;
 import com.github.houbb.common.cache.core.support.clean.CommonCacheCleanTask;
 import com.github.houbb.log.integration.core.Log;
@@ -15,9 +15,9 @@ import java.util.concurrent.TimeUnit;
  * 基于 map 的本地实现
  *
  * @author binbin.hou
- * @since 1.0.0
+ * @since 0.0.1
  */
-public class CommonCacheServiceMap implements ICommonCacheService {
+public class CommonCacheServiceMap extends AbstractCommonCacheService {
 
     /**
      * 日志信息
@@ -31,7 +31,23 @@ public class CommonCacheServiceMap implements ICommonCacheService {
      */
     private Map<String, CommonCacheValueDto> cacheMap;
 
+    /**
+     * 清空任务-延迟秒数
+     */
+    private final long cleanDelaySeconds;
+
+    /**
+     * 清空任务-周期秒数
+     */
+    private final long cleanPeriodSeconds;
+
     public CommonCacheServiceMap() {
+        this(10, 60);
+    }
+
+    public CommonCacheServiceMap(long cleanDelaySeconds, long cleanPeriodSeconds) {
+        this.cleanDelaySeconds = cleanDelaySeconds;
+        this.cleanPeriodSeconds = cleanPeriodSeconds;
         this.initMap();
         this.initCleanTask();
     }
@@ -52,20 +68,15 @@ public class CommonCacheServiceMap implements ICommonCacheService {
         // 这里的调度参数，没有必要暴露。
         // 采用和 redis 类似的惰性淘汰即可。
         Executors.newScheduledThreadPool(1)
-                .scheduleAtFixedRate(cleanTask, 10, 10,
+                .scheduleAtFixedRate(cleanTask, cleanDelaySeconds, cleanPeriodSeconds,
                         TimeUnit.SECONDS);
-    }
-
-    @Override
-    public synchronized void set(String key, String value) {
-        this.set(key, value, 0);
     }
 
     @Override
     public synchronized void set(String key, String value, long expireMills) {
         long actualMills = 0;
         if(expireMills <= 0) {
-            LOG.info("过期时间小于0，认为不过期");
+            LOG.info("过期时间小于等于0，认为不过期");
         } else {
             long currentMills = System.currentTimeMillis();
             actualMills = currentMills + expireMills;
@@ -92,20 +103,6 @@ public class CommonCacheServiceMap implements ICommonCacheService {
         checkExpireAndRemove(key);
 
         return cacheMap.containsKey(key);
-    }
-
-    @Override
-    public synchronized void expire(String key, long expireTime, TimeUnit timeUnit) {
-        //判断 key 是否存在
-        if(contains(key)) {
-            long currentMills = System.currentTimeMillis();
-            long actualMills = currentMills + timeUnit.toMillis(expireTime);
-
-            CommonCacheValueDto dto = cacheMap.get(key);
-            dto.setExpireTime(actualMills);
-
-            cacheMap.put(key, dto);
-        }
     }
 
     @Override
@@ -165,6 +162,11 @@ public class CommonCacheServiceMap implements ICommonCacheService {
         }
 
         return expireTime;
+    }
+
+    @Override
+    public Object eval(String var1, int var2, String... var3) {
+        throw new UnsupportedOperationException();
     }
 
     /**
