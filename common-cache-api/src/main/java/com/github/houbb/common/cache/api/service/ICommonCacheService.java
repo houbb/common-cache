@@ -28,6 +28,18 @@ public interface ICommonCacheService {
     void set(String key, String value, long expireMills);
 
     /**
+     * 设置对应的值
+     * @param key 键
+     * @param value 值
+     * @param nxxx NX
+     * @param expx PX
+     * @param time 过期时间，单位毫秒
+     * @return 结果
+     * @since 0.0.5
+     */
+    String set(String key, String value, String nxxx, String expx, int time);
+
+    /**
      * 获取对应的值
      * @param key key
      * @return 结果

@@ -87,6 +87,14 @@ public class CommonCacheServiceMap extends AbstractCommonCacheService {
     }
 
     @Override
+    public synchronized String set(String key, String value, String nxxx, String expx, int time) {
+        this.set(key, value, time);
+
+        // 兼容 jedis
+        return "OK";
+    }
+
+    @Override
     public String get(String key) {
         checkExpireAndRemove(key);
 

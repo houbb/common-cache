@@ -27,7 +27,7 @@
 <dependency>
     <groupId>com.github.houbb</groupId>
     <artifactId>common-cache-core</artifactId>
-    <version>0.0.2</version>
+    <version>0.0.5</version>
 </dependency>
 ```
 
@@ -60,6 +60,16 @@ commonCacheService.set(key, value);
 String getVal = commonCacheService.get(key);
 Assert.assertEquals(value, getVal);
 ```
+
+# 相关开源矩阵
+
+[cache ]()
+
+[common-cache 通用缓存]()
+
+[redis-config redis 统一配置]()
+
+[lock 分布式锁]()
 
 # Road-Map
 
