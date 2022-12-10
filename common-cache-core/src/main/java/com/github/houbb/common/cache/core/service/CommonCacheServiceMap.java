@@ -76,7 +76,7 @@ public class CommonCacheServiceMap extends AbstractCommonCacheService {
     public synchronized void set(String key, String value, long expireMills) {
         long actualMills = 0;
         if(expireMills <= 0) {
-            LOG.info("过期时间小于等于0，认为不过期");
+            LOG.debug("[Cache] 过期时间小于等于0，认为不过期");
         } else {
             long currentMills = System.currentTimeMillis();
             actualMills = currentMills + expireMills;

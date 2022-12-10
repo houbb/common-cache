@@ -28,7 +28,7 @@ public class CommonCacheCleanTask implements Runnable {
 
     @Override
     public void run() {
-        LOG.info("[Cache] 开始清理过期数据");
+        LOG.debug("[Cache] 开始清理过期数据");
 
         // 当前时间固定，不需要考虑删除的耗时
         // 毕竟最多相差 1s，但是和系统的时钟交互是比删除耗时多的。
@@ -44,11 +44,11 @@ public class CommonCacheCleanTask implements Runnable {
             if(currentMills >= expireTime) {
                 final String key = entry.getKey();
                 map.remove(key);
-                LOG.info("[Cache] 移除 key: {}", key);
+                LOG.debug("[Cache] 移除 key: {}", key);
             }
         }
 
-        LOG.info("[Cache] 结束清理过期数据");
+        LOG.debug("[Cache] 结束清理过期数据");
     }
 
 }
