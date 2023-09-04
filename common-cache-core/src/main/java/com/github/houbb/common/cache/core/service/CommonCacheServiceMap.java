@@ -55,14 +55,14 @@ public class CommonCacheServiceMap extends AbstractCommonCacheService {
     /**
      * 初始化缓存
      */
-    protected void initMap() {
+    public void initMap() {
         this.cacheMap = new ConcurrentHashMap<>();
     }
 
     /**
      * 初始化清理任务
      */
-    protected void initCleanTask() {
+    public void initCleanTask() {
         final Runnable cleanTask = new CommonCacheCleanTask(this.cacheMap);
 
         // 这里的调度参数，没有必要暴露。
