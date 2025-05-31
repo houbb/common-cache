@@ -1,8 +1,10 @@
 package com.github.houbb.common.cache.core.service;
 
 import com.github.houbb.common.cache.api.service.AbstractCommonCacheService;
+import com.github.houbb.common.cache.core.constant.CommonCacheConst;
 import com.github.houbb.common.cache.core.dto.CommonCacheValueDto;
 import com.github.houbb.common.cache.core.support.clean.CommonCacheCleanTask;
+import com.github.houbb.heaven.util.common.ArgUtil;
 import com.github.houbb.log.integration.core.Log;
 import com.github.houbb.log.integration.core.LogFactory;
 
@@ -10,6 +12,7 @@ import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 import java.util.concurrent.Executors;
 import java.util.concurrent.TimeUnit;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 /**
  * 基于 map 的本地实现
@@ -29,7 +32,7 @@ public class CommonCacheServiceMap extends AbstractCommonCacheService {
      * 存储信息
      * @since 0.0.1
      */
-    private Map<String, CommonCacheValueDto> cacheMap;
+    private ConcurrentHashMap<String, CommonCacheValueDto> cacheMap;
 
     /**
      * 清空任务-延迟秒数
@@ -86,11 +89,53 @@ public class CommonCacheServiceMap extends AbstractCommonCacheService {
         cacheMap.put(key, dto);
     }
 
+    // 通常是 "OK" 表示成功，或者 null 表示失败（例如使用 NX 但键已存在时）。
     @Override
-    public synchronized String set(String key, String value, String nxxx, String expx, int time) {
-        this.set(key, value, time);
+    public String set(String key, String value, String nxxx, String expx, int time) {
+        ArgUtil.notEmpty(nxxx, "nxxx");
+        ArgUtil.notEmpty(expx, "expx");
 
-        // 兼容 jedis
+        // 处理 NX/XX 条件
+        boolean exists = this.contains(key);
+        // NX 只在键不存在时设置
+        if (CommonCacheConst.NX.equalsIgnoreCase(nxxx) && exists) {
+            return null;
+        }
+        // XX 只在键存在时设置
+        if (CommonCacheConst.XX.equalsIgnoreCase(nxxx) && !exists) {
+            return null;
+        }
+
+        // 时间处理
+        long expireMills = time;
+        if(CommonCacheConst.EX.equalsIgnoreCase(expx)) {
+            expireMills = time * 1000L;
+        }
+        long currentMills = System.currentTimeMillis();
+        long actualMills = currentMills + expireMills;
+
+        // 分别按照两种模式处理
+        // NX 只在键不存在时设置
+        if (CommonCacheConst.NX.equalsIgnoreCase(nxxx)) {
+            // NX 情况使用 putIfAbsent
+            CommonCacheValueDto dto = CommonCacheValueDto.of(value, actualMills);
+            cacheMap.put(key, dto);
+            CommonCacheValueDto result = cacheMap.putIfAbsent(key, dto);
+            if (result != null) {
+                return null; // 已存在其他值
+            }
+        }
+
+        // XX 只在存在时才处理
+        if (CommonCacheConst.XX.equalsIgnoreCase(nxxx)) {
+            // 对于 XX 情况，使用 replace 保证原子性
+            CommonCacheValueDto dto = CommonCacheValueDto.of(value, actualMills);
+            CommonCacheValueDto result = cacheMap.replace(key, dto);
+            if (result == null) {
+                return null; // 替换失败（可能在检查后键被删除）
+            }
+        }
+
         return "OK";
     }
 
