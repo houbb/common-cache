@@ -35,18 +35,18 @@
 
 方法说明如下：
 
-| 方法                                                                        | 说明 | 返回值 |
-|:--------------------------------------------------------------------------|:---|:---|
-| set(String key, String value)                                             | 设置对应的值 | void |
-| set(String key, String value, long expireMills)                           | 设置对应的值，指定过期时间 | void |
-| set(String key, String value, String nxxx, String expx, long expireMills) | 设置对应的值，指定过期时间 | void |
-| get(String key)                                                           | 获取值 | String |
-| contains(String key)                                                      | 是否包含 | boolean |
-| expire(String key, long expireTime, TimeUnit timeUnit)                    | 指定过期时间 | void |
-| expireAt(String key, long unixTime)                                       | 指定 key 的过期时间 | void |
-| remove(String key)                                                        | 移除指定的 key | void |
-| ttl(String key)                                                           | 获取指定 key 的存活时间，不过期返回-1，不存在返回-2 | long |
-| expireAt(String key)                                                      | 获取 key 的过期时间，不过期返回-1，不存在返回-2 | long |
+| 方法                                                                        | 说明                             | 返回值             |
+|:--------------------------------------------------------------------------|:-------------------------------|:----------------|
+| set(String key, String value)                                             | 设置对应的值                         | void            |
+| set(String key, String value, long expireMills)                           | 设置对应的值，指定过期时间                  | void            |
+| set(String key, String value, String nxxx, String expx, long expireMills) | 设置对应的值，指定过期时间。支持 nx            | String "OK"代表成功 |
+| get(String key)                                                           | 获取值                            | String          |
+| contains(String key)                                                      | 是否包含                           | boolean         |
+| expire(String key, long expireTime, TimeUnit timeUnit)                    | 指定过期时间                         | void            |
+| expireAt(String key, long unixTime)                                       | 指定 key 的过期时间                   | void            |
+| remove(String key)                                                        | 移除指定的 key                      | void            |
+| ttl(String key)                                                           | 获取指定 key 的存活时间，不过期返回-1，不存在返回-2 | long            |
+| expireAt(String key)                                                      | 获取 key 的过期时间，不过期返回-1，不存在返回-2   | long            |
 
 ## 使用
 
@@ -79,7 +79,7 @@ Assert.assertEquals(value, getVal);
 | [rate-limit](https://github.com/houbb/rate-limit) | 限流核心库 | 已开源 |
 | [cache](https://github.com/houbb/cache) | 手写渐进式 redis | 已开源 |
 | [lock](https://github.com/houbb/lock) | 开箱即用的分布式锁 | 已开源 |
-| [common-cache](https://github.com/houbb/common-cache) | 通用缓存标准定义 | 研发中 |
+| [common-cache](https://github.com/houbb/common-cache) | 通用缓存标准定义 | 已开源 |
 | [redis-config](https://github.com/houbb/redis-config) | 兼容各种常见的 redis 配置模式 | 研发中 |
 | [quota-server](https://github.com/houbb/quota-server) | 限额限次核心服务 | 待开始 |
 | [quota-admin](https://github.com/houbb/quota-admin) | 限额限次控台 | 待开始 |
