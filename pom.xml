@@ -12,11 +12,12 @@
     <groupId>com.github.houbb</groupId>
     <artifactId>common-cache</artifactId>
     <packaging>pom</packaging>
-    <version>1.0.1</version>
+    <version>1.1.0</version>
     <modules>
         <module>common-cache-api</module>
         <module>common-cache-core</module>
         <module>common-cache-test</module>
+        <module>common-cache-mysql</module>
     </modules>
 
     <properties>
@@ -41,6 +42,7 @@
         <aop.version>0.0.4</aop.version>
         <test.version>0.0.1</test.version>
         <common-proxy.version>1.2.0</common-proxy.version>
+        <jdbc.version>0.8.0</jdbc.version>
 
         <!--============================== OTHER ==============================-->
         <junit.version>4.12</junit.version>
@@ -50,6 +52,7 @@
         <fastjson.version>1.2.70</fastjson.version>
         <servlet.version>3.1.0</servlet.version>
         <spring-boot.version>1.5.22.RELEASE</spring-boot.version>
+        <mysql-connector-java.version>5.1.34</mysql-connector-java.version>
     </properties>
 
     <dependencyManagement>
@@ -63,6 +66,11 @@
             <dependency>
                 <groupId>com.github.houbb</groupId>
                 <artifactId>common-cache-core</artifactId>
+                <version>${project.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.github.houbb</groupId>
+                <artifactId>common-cache-mysql</artifactId>
                 <version>${project.version}</version>
             </dependency>
 
@@ -90,7 +98,20 @@
                 <version>${common-proxy.version}</version>
             </dependency>
 
+            <dependency>
+                <groupId>com.github.houbb</groupId>
+                <artifactId>jdbc-mapping</artifactId>
+                <version>${jdbc.version}</version>
+            </dependency>
+
+
             <!--============================== OTHER ==============================-->
+            <dependency>
+                <groupId>mysql</groupId>
+                <artifactId>mysql-connector-java</artifactId>
+                <version>${mysql-connector-java.version}</version>
+            </dependency>
+
         </dependencies>
     </dependencyManagement>
 

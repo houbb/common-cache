@@ -33,6 +33,18 @@ public abstract class AbstractCommonCacheService implements ICommonCacheService 
         return this.eval(script, 0);
     }
 
+    @Override
+    public long ttl(String key) {
+        long expireAt = this.expireAt(key);
+        if(expireAt <= 0) {
+            return expireAt;
+        }
+
+        // 获取真实的过期时间
+        long currentTime = System.currentTimeMillis();
+        return expireAt - currentTime;
+    }
+
     protected static String[] getParams(List<String> keys, List<String> args) {
         int keyCount = keys.size();
         int argCount = args.size();

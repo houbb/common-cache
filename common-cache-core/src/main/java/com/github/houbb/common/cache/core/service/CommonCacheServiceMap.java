@@ -163,29 +163,20 @@ public class CommonCacheServiceMap extends AbstractCommonCacheService {
         cacheMap.remove(key);
     }
 
-    /**
-     *
-     * @param key 获取 key
-     * @return 结果
-     */
     @Override
-    public long ttl(String key) {
+    public boolean removeEx(String key, Object expectValue) {
         checkExpireAndRemove(key);
 
+        // 必须获取原始的值？
         CommonCacheValueDto dto = cacheMap.get(key);
-        // 信息不存在
         if(dto == null) {
-            return -2L;
+            return false;
         }
-        // 没有指定过期时间
-        Long expireTime = dto.getExpireTime();
-        if(expireTime == null) {
-            return -1L;
+        if(!expectValue.equals(dto.getValue())) {
+            return false;
         }
 
-        // 获取真实的过期时间
-        long currentTime = System.currentTimeMillis();
-        return expireTime - currentTime;
+        return cacheMap.remove(key, dto);
     }
 
     @Override
@@ -226,7 +217,7 @@ public class CommonCacheServiceMap extends AbstractCommonCacheService {
      * 当一个信息过期的时候，将其清空。惰性淘汰
      * @param key 键
      */
-    private synchronized void checkExpireAndRemove(String key) {
+    private void checkExpireAndRemove(String key) {
         //1. 获取
         CommonCacheValueDto dto = cacheMap.get(key);
         if(dto == null) {

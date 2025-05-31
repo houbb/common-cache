@@ -64,6 +64,15 @@ public interface ICommonCacheService {
     void remove(String key);
 
     /**
+     * 只有当存在时，且为预期值才删除
+     * @param key key
+     * @param expectValue 值
+     * @return 结果
+     * @since 1.1.0
+     */
+    boolean removeEx(final String key, final Object expectValue);
+
+    /**
      * key 的存活时间
      *
      * In Redis 2.8 or newer, if the Key does not have an associated expire, -1 is returned or if the Key does not exists, -2 is returned.

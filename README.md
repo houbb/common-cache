@@ -15,7 +15,13 @@
 
 ## 特性
 
-- 基于 HashMap 的实现
+- 统一的标准 cache 接口
+
+- 基于本地 Map 的实现
+
+- 基于 mysql 实现
+
+- 基于 redis 实现
 
 > [变更日志](https://github.com/houbb/common-cache/blob/master/CHANGELOG.md)
 
@@ -27,7 +33,7 @@
 <dependency>
     <groupId>com.github.houbb</groupId>
     <artifactId>common-cache-core</artifactId>
-    <version>1.0.1</version>
+    <version>1.1.0</version>
 </dependency>
 ```
 
@@ -45,6 +51,7 @@
 | expire(String key, long expireTime, TimeUnit timeUnit)                    | 指定过期时间                         | void            |
 | expireAt(String key, long unixTime)                                       | 指定 key 的过期时间                   | void            |
 | remove(String key)                                                        | 移除指定的 key                      | void            |
+| removeEx(String key, Object value)                                        | 移除指定的 key，且 value 也等于预期值       | void            |
 | ttl(String key)                                                           | 获取指定 key 的存活时间，不过期返回-1，不存在返回-2 | long            |
 | expireAt(String key)                                                      | 获取 key 的过期时间，不过期返回-1，不存在返回-2   | long            |
 
@@ -62,12 +69,64 @@ String getVal = commonCacheService.get(key);
 Assert.assertEquals(value, getVal);
 ```
 
+# mysql
+
+## 准备工作
+
+执行建表语句
+
+```sql
+CREATE DATABASE common_cache;
+use common_cache;
+
+CREATE TABLE t_common_cache
+(
+    id               bigint(20) unsigned NOT NULL AUTO_INCREMENT,
+    cache_key         varchar(128) NOT NULL COMMENT '缓存键',
+    cache_value      varchar(32)  NOT NULL DEFAULT '' COMMENT '缓存值',
+    cache_expire_time bigint(20) NOT NULL DEFAULT 0 COMMENT '到期时间',
+    create_user      varchar(32)  NOT NULL DEFAULT 'SYSTEM' COMMENT '创建者',
+    update_user      varchar(32)  NOT NULL DEFAULT 'SYSTEM' COMMENT '更新者',
+    create_time      timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '创建时间',
+    update_time      timestamp    NOT NULL DEFAULT CURRENT_TIMESTAMP COMMENT '更新时间',
+    PRIMARY KEY (id),
+    UNIQUE KEY uk_cache_key (cache_key)
+) ENGINE = InnoDB
+  DEFAULT CHARSET = utf8mb4 COMMENT ='数据库缓存表';
+```
+
+## 测试
+
+初始化缓存
+
+```java
+private ICommonCacheService buildCommonCache() {
+    //datasource
+    DataSource dataSource = JdbcPoolBs.newInstance()
+            .url("jdbc:mysql://127.0.0.1:3306/common_cache")
+            .username("admin")
+            .password("123456")
+            .driverClass(DriverNameConst.MYSQL)
+            .pooled();
+
+    return new MysqlCommonCacheService(dataSource);
+}
+```
+
+测试例子：
+
+```java
+ICommonCacheService commonCacheService = buildCommonCache();
+
+commonCacheService.set("key", "value");
+Assert.assertEquals("value", commonCacheService.get("key"));
+```
 
 # Road-Map
 
-- [ ] 添加基于 redis 的 cache 实现
+- [x] 添加基于 redis 的 cache 实现
 
-- [ ] 添加基于 mysql 的 cache 实现
+- [x] 添加基于 mysql 的 cache 实现
 
 ## 开源矩阵
 
@@ -80,7 +139,7 @@ Assert.assertEquals(value, getVal);
 | [cache](https://github.com/houbb/cache) | 手写渐进式 redis | 已开源 |
 | [lock](https://github.com/houbb/lock) | 开箱即用的分布式锁 | 已开源 |
 | [common-cache](https://github.com/houbb/common-cache) | 通用缓存标准定义 | 已开源 |
-| [redis-config](https://github.com/houbb/redis-config) | 兼容各种常见的 redis 配置模式 | 研发中 |
+| [redis-config](https://github.com/houbb/redis-config) | 兼容各种常见的 redis 配置模式 | 已开源 |
 | [quota-server](https://github.com/houbb/quota-server) | 限额限次核心服务 | 待开始 |
 | [quota-admin](https://github.com/houbb/quota-admin) | 限额限次控台 | 待开始 |
 | [flow-control-server](https://github.com/houbb/flow-control-server) | 流控核心服务 | 待开始 |
